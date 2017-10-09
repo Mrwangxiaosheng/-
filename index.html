@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{
+            padding:0;
+            margin: 0;
+        }
+        .head{
+            width: 100%;
+            height: 500px;
+            background-color: red;
+        }
+        .box{
+            width: 50%;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+<div class="head"></div>
+<div id="selection" style="width: 845px;position: relative;margin: 0 auto;">
+    <div class="box">
+        <img src="img/1.jpg" alt="" class="center-block"/>
+    </div>
+    <div class="box">
+        <img src="img/2.jpg" alt="" class="center-block"/>
+    </div>
+</div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/2.2.0/jquery.js"></script>
+<script>
+    var data=[
+        [
+            'img/3.jpg','img/4.jpg'
+        ],[
+            'img/5.jpg','img/6.jpg'
+        ],[
+            'img/7.jpg','img/8.jpg'
+        ],[
+            'img/9.jpg','img/10.jpg'
+        ],[
+            'img/11.jpg','img/12.jpg'
+        ]
+    ];
+    var index = 0;
+    var flag = true;
+    $(window).scroll(function(){
+        if(!flag){return;}
+//        console.log($(document).height());
+        if($(window).height() + $(document).scrollTop() >= $(document).height() - 300){
+            flag = false;
+//            动态加载
+            for(var i = 0; i < data[index].length; i++){
+                var str = '';
+                str += '<div class="box">';
+                str += '<img src="' + data[index][i] + '" alt="" class="center-block">';
+                str += '</div>';
+                $('#selection').append(str);
+            }
+//            延迟50毫秒进行计算高度  确保动态添加的元素已经添加完成
+            setTimeout(function(){
+                var boxs = $('.box');
+
+//            瀑布流计算
+                var arrhg = [];  // 用来保存每一列的高度
+                for(var j = 0; j < boxs.length; j++){
+                    if(j < 2){
+                        // 保存了每一列的初始高度
+                        arrhg[j] = $(boxs[j]).height();
+                    }else{
+//                   找到当前列最小的那一列
+                        var minHeight = Math.min.apply(null,arrhg);
+//                    找到当前数组的索引值
+                        var arrIndex = $.inArray(minHeight,arrhg);
+//                    设置css样式
+                        $(boxs[j]).css({
+                            position: 'absolute',
+                            left: boxs[arrIndex].offsetLeft + 'px',
+                            top: minHeight + 10 + 'px'
+                        });
+//                    更新最小列高度
+                        arrhg[arrIndex] = minHeight + $(boxs[j]).height() + 10;
+                    }
+                }
+                //设置主内容块的高度，让脚步一直往下走
+                var sh=$(document).height()-196;
+                $('section').height(sh);
+                //console.log($('section').height());
+                index++;
+                flag = true;
+                //console.log(index)
+                if(index>=5){
+                    $('footer').css('display','block');
+                }
+            },50);
+
+        }
+        //console.log($(document).height())
+
+    });
+</script>
+</html>
